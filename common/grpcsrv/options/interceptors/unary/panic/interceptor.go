@@ -18,31 +18,33 @@ type PanicHandlerInterceptor struct {
 	Interceptor grpc.UnaryServerInterceptor `name:"panic_handler"`
 }
 
-func newPanicInterceptor(
+func newPanicHandlerInterceptor(
 	appMeta config.AppMeta,
 	logger *logrus.Logger,
-) grpc.UnaryServerInterceptor {
-	return func(
-		ctx context.Context,
-		req any,
-		info *grpc.UnaryServerInfo,
-		handler grpc.UnaryHandler,
-	) (resp any, err error) {
-		defer func() {
-			if r := recover(); r != nil {
-				logger.
-					WithContext(ctx).
-					Errorf("unhandeled panic occured in method %s\n: %+v", info.FullMethod, r)
+) PanicHandlerInterceptor {
+	return PanicHandlerInterceptor{
+		Interceptor: func(
+			ctx context.Context,
+			req any,
+			info *grpc.UnaryServerInfo,
+			handler grpc.UnaryHandler,
+		) (resp any, err error) {
+			defer func() {
+				if r := recover(); r != nil {
+					logger.
+						WithContext(ctx).
+						Errorf("unhandeled panic occured in method %s\n: %+v", info.FullMethod, r)
 
-				message := "internal server error"
-				if appMeta.Stage != config.Prod {
-					message = fmt.Sprint(r)
+					message := "internal server error"
+					if appMeta.Stage != config.Prod {
+						message = fmt.Sprint(r)
+					}
+
+					err = status.Errorf(codes.Internal, message)
 				}
+			}()
 
-				err = status.Errorf(codes.Internal, message)
-			}
-		}()
-
-		return handler(ctx, req)
+			return handler(ctx, req)
+		},
 	}
 }

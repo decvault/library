@@ -6,7 +6,7 @@ func Module() fx.Option {
 	return fx.Module(
 		"panic_handler_interceptor",
 		fx.Provide(
-			newPanicInterceptor,
+			newPanicHandlerInterceptor,
 		),
 	)
 }

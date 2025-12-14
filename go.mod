@@ -3,7 +3,9 @@ module github.com/decvault/library
 go 1.24
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/pkg/errors v0.9.1
+	github.com/sirupsen/logrus v1.9.3
 	go.uber.org/config v1.4.0
 	go.uber.org/fx v1.24.0
 )

@@ -6,7 +6,8 @@ func Module() fx.Option {
 	return fx.Module(
 		"config",
 		fx.Provide(
-			newAppConfigProvider(),
+			newAppMeta,
+			newAppConfigProvider,
 		),
 	)
 }

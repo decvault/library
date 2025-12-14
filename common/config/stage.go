@@ -1,16 +1,16 @@
 package config
 
 import (
-	"os"
-
 	"github.com/pkg/errors"
 	"go.uber.org/config"
 )
 
+type Stage string
+
 const (
-	Dev  = "development"
-	Test = "testing"
-	Prod = "production"
+	Dev  Stage = "development"
+	Test Stage = "testing"
+	Prod Stage = "production"
 )
 
 const (
@@ -19,8 +19,8 @@ const (
 	prodConfigFilePath = "config/config.prod.yaml"
 )
 
-func newAppModeConfigProvider() (*config.YAML, error) {
-	configFilePath, err := getAppModeConfigFilePath()
+func newAppStageConfigProvider(meta AppMeta) (*config.YAML, error) {
+	configFilePath, err := getAppStageConfigFilePath(meta)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +29,8 @@ func newAppModeConfigProvider() (*config.YAML, error) {
 	return yaml, errors.WithStack(err)
 }
 
-func getAppModeConfigFilePath() (string, error) {
-	switch mode := os.Getenv("APP_MODE"); mode {
+func getAppStageConfigFilePath(meta AppMeta) (string, error) {
+	switch meta.Stage {
 	case Dev:
 		return devConfigFilePath, nil
 	case Test:
@@ -38,6 +38,6 @@ func getAppModeConfigFilePath() (string, error) {
 	case Prod:
 		return prodConfigFilePath, nil
 	default:
-		return "", errors.Errorf("unknown application mode: %s", mode)
+		return "", errors.Errorf("unknown application stage: %s", meta.Stage)
 	}
 }

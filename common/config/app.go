@@ -12,18 +12,18 @@ type AppConfigProvider struct {
 	Provider config.Provider
 }
 
-func newAppConfigProvider() (AppConfigProvider, error) {
+func newAppConfigProvider(meta AppMeta) (AppConfigProvider, error) {
 	envProvider, err := newAppEnvConfigProvider()
 	if err != nil {
 		return AppConfigProvider{}, err
 	}
 
-	modeProvider, err := newAppModeConfigProvider()
+	stageProvider, err := newAppStageConfigProvider(meta)
 	if err != nil {
 		return AppConfigProvider{}, err
 	}
 
-	provider, err := config.NewProviderGroup("app", modeProvider, envProvider)
+	provider, err := config.NewProviderGroup("app", stageProvider, envProvider)
 	if err != nil {
 		return AppConfigProvider{}, errors.WithStack(err)
 	}

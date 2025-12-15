@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"github.com/decvault/library/common/ctx"
+	"github.com/decvault/library/common/xctx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,7 +17,7 @@ func (hook *ContextHook) Levels() []logrus.Level {
 
 func (hook *ContextHook) Fire(entry *logrus.Entry) error {
 	if entry.Context != nil {
-		if requestID, ok := ctx.TryGetRequestID(entry.Context); ok {
+		if requestID, ok := xctx.TryGetRequestID(entry.Context); ok {
 			entry.Data[requestIDKey] = requestID.String()
 		}
 	}

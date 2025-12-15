@@ -1,6 +1,9 @@
 package logging
 
 import (
+	"os"
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
@@ -23,6 +26,13 @@ func configureLogger(logger *logrus.Logger, config loggerConfig) error {
 	}
 
 	logger.SetLevel(logLevel)
+	logger.SetOutput(os.Stdout)
+	logger.SetFormatter(&logrus.TextFormatter{
+		ForceColors:     true,
+		FullTimestamp:   true,
+		TimestampFormat: time.RFC3339,
+		PadLevelText:    true,
+	})
 
 	logger.AddHook(&ContextHook{})
 
